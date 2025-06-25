@@ -1,4 +1,4 @@
-﻿// Copyright Frostveil Studios. All Rights Reserved.
+﻿// Author: Antonio Sidenko (Tonetfal), June 2025
 
 #pragma once
 

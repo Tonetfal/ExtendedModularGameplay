@@ -1,3 +1,3 @@
-﻿// Copyright Epic Games, Inc. All Rights Reserved.
+﻿// Author: Antonio Sidenko (Tonetfal), June 2025
 
 #pragma once
