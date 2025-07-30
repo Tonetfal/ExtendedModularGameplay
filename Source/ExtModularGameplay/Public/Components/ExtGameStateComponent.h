@@ -6,11 +6,32 @@
 
 #include "ExtGameStateComponent.generated.h"
 
-UCLASS()
+#define EXT_GAME_STATE_COMPONENT_BODY() \
+	public: \
+		static ThisClass* Get(const UObject* WorldContext) \
+		{ \
+			if (!IsValid(WorldContext)) \
+			{ \
+				return nullptr; \
+			} \
+			\
+			AGameStateBase* GameState = WorldContext->GetWorld()->GetGameState(); \
+			if (!IsValid(GameState)) \
+			{ \
+				return nullptr; \
+			} \
+			\
+			auto* This = GameState->GetComponentByClass<ThisClass>(); \
+			return This; \
+		}
+
+UCLASS(Abstract)
 class EXTMODULARGAMEPLAY_API UExtGameStateComponent
 	: public UGameStateComponent
 {
 	GENERATED_BODY()
+	// EXT_GAME_STATE_COMPONENT_BODY()
+	// ^^^ Include this in your override of the component to get extra utilities ^^^
 
 public:
 	UFUNCTION(BlueprintPure, Category="Modular Gameplay", meta=(DeterminesOutputType="Class"))

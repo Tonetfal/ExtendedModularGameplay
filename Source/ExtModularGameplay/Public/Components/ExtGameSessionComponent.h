@@ -10,7 +10,7 @@ class AGameMode;
 class AGameSession;
 class AGameState;
 
-UCLASS()
+UCLASS(Abstract)
 class EXTMODULARGAMEPLAY_API UExtGameSessionComponent
 	: public UGameFrameworkComponent
 {

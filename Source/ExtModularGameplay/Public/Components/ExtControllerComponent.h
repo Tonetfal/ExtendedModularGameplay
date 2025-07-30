@@ -3,34 +3,63 @@
 #pragma once
 
 #include "Components/ControllerComponent.h"
+#include "GameFramework/PlayerState.h"
 
 #include "ExtControllerComponent.generated.h"
 
-UCLASS()
+#define EXT_CONTROLLER_COMPONENT_BODY() \
+	public: \
+		static ThisClass* Get(const AController* Controller) \
+		{ \
+			if (!IsValid(Controller)) \
+			{ \
+				return nullptr; \
+			} \
+			\
+			auto* This = Controller->GetComponentByClass<ThisClass>(); \
+			return This; \
+		} \
+		\
+		static ThisClass* Get(const APlayerState* PlayerState) \
+		{ \
+			if (!IsValid(PlayerState)) \
+			{ \
+				return nullptr; \
+			} \
+			\
+			return Get(PlayerState->GetOwningController()); \
+		}
+
+UCLASS(Abstract)
 class EXTMODULARGAMEPLAY_API UExtControllerComponent
 	: public UControllerComponent
 {
 	GENERATED_BODY()
+	// EXT_CONTROLLER_COMPONENT_BODY()
+	// ^^^ Include this in your override of the component to get extra utilities ^^^
 
 public:
 	UFUNCTION(BlueprintPure, Category="Modular Gameplay", meta=(DeterminesOutputType="Class"))
 	AController* GetController(TSubclassOf<AController> Class) const;
-	
+
 	UFUNCTION(BlueprintPure, Category="Modular Gameplay", meta=(DeterminesOutputType="Class"))
 	APlayerController* GetPlayerController(TSubclassOf<APlayerController> Class) const;
-	
+
 	UFUNCTION(BlueprintPure, Category="Modular Gameplay", meta=(DeterminesOutputType="Class"))
 	APawn* GetPawn(TSubclassOf<APawn> Class) const;
-	
+
 	UFUNCTION(BlueprintPure, Category="Modular Gameplay", meta=(DeterminesOutputType="Class"))
 	APlayerState* GetPlayerState(TSubclassOf<APlayerState> Class) const;
-	
+
 	UFUNCTION(BlueprintPure, DisplayName="Is Local Controller", Category="Modular Gameplay")
 	bool K2_IsLocalController() const;
 
 	UFUNCTION(BlueprintPure, DisplayName="Get Player View Point", Category="Modular Gameplay")
 	void K2_GetPlayerViewPoint(FVector& Location, FRotator& Rotation) const;
-	
+
+	UFUNCTION(BlueprintPure, Category="Modular Gameplay")
+	bool IsLocalPlayerController() const;
+
 	template <class T = AController>
 	T* GetController() const
 	{
@@ -44,7 +73,7 @@ public:
 		static_assert(TPointerIsConvertibleFromTo<T, AController>::Value, "'T' template parameter to GetControllerChecked must be derived from AController");
 		return CastChecked<T>(GetOwner());
 	}
-	
+
 	template <class T = APlayerController>
 	T* GetPlayerController() const
 	{

@@ -2,17 +2,37 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Components/GameFrameworkComponent.h"
 #include "GameFramework/GameModeBase.h"
+
 #include "ExtGameModeComponent.generated.h"
 
+#define EXT_GAME_MODE_COMPONENT_BODY() \
+	public: \
+		static ThisClass* Get(const UObject* WorldContext) \
+		{ \
+			if (!IsValid(WorldContext)) \
+			{ \
+				return nullptr; \
+			} \
+			\
+			AGameModeBase* GameMode = WorldContext->GetWorld()->GetAuthGameMode(); \
+			if (!IsValid(GameMode)) \
+			{ \
+				return nullptr; \
+			} \
+			\
+			auto* This = GameMode->GetComponentByClass<ThisClass>(); \
+			return This; \
+		}
 
-UCLASS()
+UCLASS(Abstract)
 class EXTMODULARGAMEPLAY_API UExtGameModeComponent
 	: public UGameFrameworkComponent
 {
 	GENERATED_BODY()
+	// EXT_GAME_MODE_COMPONENT_BODY()
+	// ^^^ Include this in your override of the component to get extra utilities ^^^
 
 public:
 	UFUNCTION(BlueprintPure, Category="Modular Gameplay", meta=(DeterminesOutputType="Class"))

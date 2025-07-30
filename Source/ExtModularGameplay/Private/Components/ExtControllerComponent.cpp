@@ -35,3 +35,8 @@ void UExtControllerComponent::K2_GetPlayerViewPoint(FVector& Location, FRotator&
 {
 	GetPlayerViewPoint(Location, Rotation);
 }
+
+bool UExtControllerComponent::IsLocalPlayerController() const
+{
+	return GetController()->IsPlayerController() && IsLocalController();
+}

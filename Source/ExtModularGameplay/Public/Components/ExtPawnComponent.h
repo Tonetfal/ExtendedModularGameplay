@@ -3,14 +3,50 @@
 #pragma once
 
 #include "Components/PawnComponent.h"
+#include "GameFramework/PlayerState.h"
 
 #include "ExtPawnComponent.generated.h"
 
-UCLASS()
+#define EXT_PAWN_COMPONENT_BODY() \
+	public: \
+		static ThisClass* Get(const APawn* Pawn) \
+		{ \
+			if (!IsValid(Pawn)) \
+			{ \
+				return nullptr; \
+			} \
+			\
+			auto* This = Pawn->GetComponentByClass<ThisClass>(); \
+			return This; \
+		} \
+		\
+		static ThisClass* Get(const APlayerState* PlayerState) \
+		{ \
+			if (!IsValid(PlayerState)) \
+			{ \
+				return nullptr; \
+			} \
+			\
+			return Get(PlayerState->GetPawn()); \
+		} \
+		\
+		static ThisClass* Get(const AController* Controller) \
+		{ \
+			if (!IsValid(Controller)) \
+			{ \
+				return nullptr; \
+			} \
+			\
+			return Get(Controller->GetPawn()); \
+		}
+
+UCLASS(Abstract)
 class EXTMODULARGAMEPLAY_API UExtPawnComponent
 	: public UPawnComponent
 {
 	GENERATED_BODY()
+	// EXT_PAWN_COMPONENT_BODY()
+	// ^^^ Include this in your override of the component to get extra utilities ^^^
 
 public:
 #if WITH_EDITOR
@@ -21,13 +57,13 @@ public:
 
 	UFUNCTION(BlueprintPure, Category="Modular Gameplay", meta=(DeterminesOutputType="Class"))
 	APawn* GetPawn(TSubclassOf<APawn> Class) const;
-	
+
 	UFUNCTION(BlueprintPure, Category="Modular Gameplay", meta=(DeterminesOutputType="Class"))
 	APlayerState* GetPlayerState(TSubclassOf<APlayerState> Class) const;
-	
+
 	UFUNCTION(BlueprintPure, Category="Modular Gameplay", meta=(DeterminesOutputType="Class"))
 	AController* GetController(TSubclassOf<AController> Class) const;
-	
+
 	UFUNCTION(BlueprintPure, Category="Modular Gameplay", meta=(DeterminesOutputType="Class"))
 	APlayerController* GetPlayerController(TSubclassOf<APlayerController> Class) const;
 
@@ -58,7 +94,7 @@ public:
 		static_assert(TPointerIsConvertibleFromTo<T, AController>::Value, "'T' template parameter to GetController must be derived from AController");
 		return GetPawnChecked<APawn>()->GetController<T>();
 	}
-	
+
 	template <class T = APlayerController>
 	T* GetPlayerController() const
 	{
