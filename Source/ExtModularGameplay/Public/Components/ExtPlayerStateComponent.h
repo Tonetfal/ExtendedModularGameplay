@@ -27,6 +27,15 @@
 			\
 			auto* This = PlayerState->GetComponentByClass<ThisClass>(); \
 			return This; \
+		} \
+		static ThisClass* Get(const APawn* Pawn) \
+		{ \
+			if (!IsValid(Pawn)) \
+			{ \
+				return nullptr; \
+			} \
+			\
+			return Get(Pawn->GetPlayerState()); \
 		}
 
 UCLASS(Abstract)
@@ -40,16 +49,16 @@ class EXTMODULARGAMEPLAY_API UExtPlayerStateComponent
 public:
 	UFUNCTION(BlueprintPure, Category="Modular Gameplay", meta=(DeterminesOutputType="Class"))
 	APlayerState* GetPlayerState(TSubclassOf<APlayerState> Class) const;
-	
+
 	UFUNCTION(BlueprintPure, Category="Modular Gameplay", meta=(DeterminesOutputType="Class"))
 	APawn* GetPawn(TSubclassOf<APawn> Class) const;
-	
+
 	UFUNCTION(BlueprintPure, Category="Modular Gameplay", meta=(DeterminesOutputType="Class"))
 	AController* GetController(TSubclassOf<AController> Class) const;
-	
+
 	UFUNCTION(BlueprintPure, Category="Modular Gameplay", meta=(DeterminesOutputType="Class"))
 	APlayerController* GetPlayerController(TSubclassOf<APlayerController> Class) const;
-	
+
 	template <class T = APlayerState>
 	T* GetPlayerState() const
 	{
@@ -77,7 +86,7 @@ public:
 		static_assert(TPointerIsConvertibleFromTo<T, AController>::Value, "'T' template parameter to GetController must be derived from AController");
 		return Cast<T>(GetPlayerStateChecked()->GetOwningController());
 	}
-	
+
 	template <class T = APlayerController>
 	T* GetPlayerController() const
 	{

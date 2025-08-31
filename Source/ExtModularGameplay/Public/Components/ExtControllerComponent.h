@@ -28,6 +28,16 @@
 			} \
 			\
 			return Get(PlayerState->GetOwningController()); \
+		} \
+		static ThisClass* Get(const APawn* Pawn) \
+		{ \
+			if (!IsValid(Pawn)) \
+			{ \
+				return nullptr; \
+			} \
+			\
+			auto* This = Get(Pawn->GetController()); \
+			return This; \
 		}
 
 UCLASS(Abstract)

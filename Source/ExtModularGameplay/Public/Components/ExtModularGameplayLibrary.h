@@ -77,3 +77,16 @@ public:
 	static UPawnComponent* GetPawnComponent_PlayerState(const APlayerState* PlayerState,
 		UPARAM(meta=(AllowAbstract="False")) TSubclassOf<UPawnComponent> Class);
 };
+
+#define EXT_GENERIC_COMPONENT_BODY() \
+	public: \
+		static ThisClass* Get(const AActor* Actor) \
+		{ \
+			if (!IsValid(Actor)) \
+			{ \
+				return nullptr; \
+			} \
+			\
+			auto* This = Actor->GetComponentByClass<ThisClass>(); \
+			return This; \
+		}
